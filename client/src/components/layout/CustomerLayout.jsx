@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme } from '../../store/slices/themeSlice';
 import { logout } from '../../store/slices/authSlice';
+import { fetchWishlist } from '../../store/slices/wishlistSlice';
 import ToastContainer from '../common/ToastContainer';
 import {
   Scissors,
@@ -27,7 +28,12 @@ export default function CustomerLayout() {
   const navigate = useNavigate();
   const darkMode = useSelector((state) => state.theme.darkMode);
   const user = useSelector((state) => state.auth.user);
+  const wishlistCount = useSelector((state) => state.wishlist.count);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchWishlist());
+  }, [dispatch]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -45,7 +51,7 @@ export default function CustomerLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-stone-100 dark:bg-stone-950 text-stone-900 dark:text-stone-100 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-stone-100 dark:bg-stone-950 text-stone-900 dark:text-stone-100">
       {/* Mobile Top Header */}
       <header className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 sticky top-0 z-30">
         <Link to="/" className="flex items-center space-x-2">
@@ -129,7 +135,20 @@ export default function CustomerLayout() {
                       <Icon className="w-4 h-4" />
                       <span>{item.name}</span>
                     </div>
-                    {isActive && <ChevronRight className="w-4 h-4" />}
+                    <div className="flex items-center space-x-2">
+                      {item.path === '/dashboard/wishlist' && wishlistCount > 0 && (
+                        <span
+                          className={`px-2 py-0.5 text-[11px] font-bold rounded-full transition-colors ${
+                            isActive
+                              ? 'bg-white text-brand-700'
+                              : 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300 border border-amber-300/40'
+                          }`}
+                        >
+                          {wishlistCount}
+                        </span>
+                      )}
+                      {isActive && <ChevronRight className="w-4 h-4" />}
+                    </div>
                   </>
                 )}
               </NavLink>
@@ -171,7 +190,7 @@ export default function CustomerLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 md:ml-64 p-4 sm:p-6 lg:p-8 min-h-screen">
+      <main className="md:ml-64 p-4 sm:p-6 lg:p-8 min-h-screen min-w-0">
         <Outlet />
       </main>
 

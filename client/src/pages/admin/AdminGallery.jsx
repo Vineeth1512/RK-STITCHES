@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { addToast } from '../../store/slices/uiSlice';
 import api from '../../services/api';
 import { Image, Plus, Trash2, X } from 'lucide-react';
+import ImageUpload from '../../components/common/ImageUpload';
 
 export default function AdminGallery() {
   const dispatch = useDispatch();
@@ -128,17 +129,12 @@ export default function AdminGallery() {
                   <option value="Custom Designs">Custom Designs</option>
                 </select>
               </div>
-              <div>
-                <label className="block font-semibold mb-1">Image URL *</label>
-                <input
-                  type="url"
-                  required
-                  value={form.imageUrl}
-                  onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full p-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border"
-                />
-              </div>
+              <ImageUpload
+                label="Lookbook Photo *"
+                value={form.imageUrl}
+                onChange={(url) => setForm({ ...form, imageUrl: url })}
+                aspectRatio="aspect-square"
+              />
               <div>
                 <label className="block font-semibold mb-1">Caption</label>
                 <input

@@ -13,10 +13,12 @@ export const getWishlist = async (req, res, next) => {
       wishlist = await Wishlist.create({ user: req.user._id, designs: [] });
     }
 
+    const validDesigns = (wishlist.designs || []).filter(Boolean);
+
     res.status(200).json({
       success: true,
-      count: wishlist.designs.length,
-      data: wishlist.designs
+      count: validDesigns.length,
+      data: validDesigns
     });
   } catch (error) {
     next(error);
@@ -35,18 +37,28 @@ export const addToWishlist = async (req, res, next) => {
       wishlist = await Wishlist.create({ user: req.user._id, designs: [] });
     }
 
-    if (!wishlist.designs.includes(designId)) {
+    const alreadyIn = wishlist.designs.some(
+      (id) => id && id.toString() === designId.toString()
+    );
+
+    if (!alreadyIn) {
       wishlist.designs.push(designId);
       await wishlist.save();
       await Design.findByIdAndUpdate(designId, { $inc: { likesCount: 1 } });
     }
 
-    const populated = await Wishlist.findById(wishlist._id).populate('designs');
+    const populated = await Wishlist.findById(wishlist._id).populate({
+      path: 'designs',
+      select: 'title slug category images estimatedPrice priceNote tags isFeatured fabricRecommendation'
+    });
+
+    const validDesigns = (populated?.designs || []).filter(Boolean);
 
     res.status(200).json({
       success: true,
       message: 'Design added to your wishlist',
-      data: populated.designs
+      count: validDesigns.length,
+      data: validDesigns
     });
   } catch (error) {
     next(error);
@@ -60,17 +72,23 @@ export const removeFromWishlist = async (req, res, next) => {
 
     if (wishlist) {
       wishlist.designs = wishlist.designs.filter(
-        (id) => id.toString() !== designId
+        (id) => id && id.toString() !== designId.toString()
       );
       await wishlist.save();
     }
 
-    const populated = await Wishlist.findById(wishlist._id).populate('designs');
+    const populated = await Wishlist.findById(wishlist._id).populate({
+      path: 'designs',
+      select: 'title slug category images estimatedPrice priceNote tags isFeatured fabricRecommendation'
+    });
+
+    const validDesigns = (populated?.designs || []).filter(Boolean);
 
     res.status(200).json({
       success: true,
       message: 'Design removed from wishlist',
-      data: populated ? populated.designs : []
+      count: validDesigns.length,
+      data: validDesigns
     });
   } catch (error) {
     next(error);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToWishlist, removeFromWishlist } from '../../store/slices/wishlistSlice';
+import { toggleWishlist } from '../../store/slices/wishlistSlice';
 import api from '../../services/api';
 import { Sparkles, Heart, Search, Play, ArrowRight, CheckCircle2, ChevronRight } from 'lucide-react';
 
@@ -37,12 +37,8 @@ export default function Designs() {
     return wishlistItems.some((item) => (item._id || item) === id);
   };
 
-  const handleToggleWishlist = async (design) => {
-    if (isWishlisted(design._id)) {
-      dispatch(removeFromWishlist(design._id));
-    } else {
-      dispatch(addToWishlist(design));
-    }
+  const handleToggleWishlist = (design) => {
+    dispatch(toggleWishlist(design));
   };
 
   const filteredDesigns = designs.filter((d) => {

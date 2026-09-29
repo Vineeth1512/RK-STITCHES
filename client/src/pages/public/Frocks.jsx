@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleWishlist } from '../../store/slices/wishlistSlice';
 import api from '../../services/api';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight, Heart } from 'lucide-react';
 
 export default function Frocks() {
+  const dispatch = useDispatch();
+  const wishlistItems = useSelector((state) => state.wishlist.items);
   const [designs, setDesigns] = useState([]);
+
+  const isWishlisted = (id) => wishlistItems.some((item) => (item._id || item) === id);
 
   useEffect(() => {
     api.get('/designs?category=Long Frocks')
@@ -33,8 +39,19 @@ export default function Frocks() {
             className="bg-white dark:bg-stone-900 rounded-3xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
           >
             <div>
-              <div className="h-72 overflow-hidden bg-stone-100 dark:bg-stone-800">
-                <img src={d.images[0]} alt={d.title} className="w-full h-full object-cover" />
+              <div className="relative h-72 overflow-hidden bg-stone-100 dark:bg-stone-800 group">
+                <img src={d.images[0]} alt={d.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <button
+                  onClick={() => dispatch(toggleWishlist(d))}
+                  className={`absolute top-3 right-3 p-2.5 rounded-full backdrop-blur-md transition-all ${
+                    isWishlisted(d._id)
+                      ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30'
+                      : 'bg-stone-950/60 text-white hover:bg-rose-500'
+                  }`}
+                  title={isWishlisted(d._id) ? 'Remove from Wishlist' : 'Save to Wishlist'}
+                >
+                  <Heart className="w-4 h-4 fill-current" />
+                </button>
               </div>
               <div className="p-6 space-y-2">
                 <h3 className="font-serif text-xl font-bold text-stone-900 dark:text-white">{d.title}</h3>

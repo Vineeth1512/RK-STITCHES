@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchWishlist } from './store/slices/wishlistSlice';
 
 // Layouts
 import PublicLayout from './components/layout/PublicLayout';
@@ -67,7 +68,16 @@ function ProtectedRoute({ children }) {
 }
 
 export default function App() {
+  const dispatch = useDispatch();
   const { pathname } = useLocation();
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  // Sync wishlist with server whenever authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchWishlist());
+    }
+  }, [isAuthenticated, dispatch]);
 
   // Scroll to top on route change
   useEffect(() => {

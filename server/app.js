@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -24,6 +27,7 @@ import faqRoutes from './routes/faqRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import passport from './config/passport.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -37,19 +41,32 @@ app.use(helmet({
 }));
 
 // CORS
-const allowedOrigins = [
+const configuredOrigins = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((s) => s.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
+const defaultOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-  'http://localhost:3000',
-  process.env.CLIENT_URL
-].filter(Boolean);
+  'http://localhost:3000'
+];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development') {
+    if (!origin) return callback(null, true);
+    const cleanOrigin = origin.replace(/\/+$/, '');
+
+    const isAllowed =
+      process.env.NODE_ENV === 'development' ||
+      defaultOrigins.includes(cleanOrigin) ||
+      configuredOrigins.includes(cleanOrigin) ||
+      cleanOrigin.endsWith('.vercel.app');
+
+    if (isAllowed) {
       callback(null, true);
     } else {
-      callback(new Error('CORS Not allowed by origin'));
+      callback(new Error(`CORS blocked for origin: ${origin}`));
     }
   },
   credentials: true
@@ -75,8 +92,8 @@ app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Health check
-app.get('/api/health', (req, res) => {
+// Health check (supports root, /health, /api/health)
+app.get(['/', '/health', '/api/health'], (req, res) => {
   res.status(200).json({
     status: 'ok',
     brand: 'RK STITCHES API',
@@ -84,6 +101,9 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date()
   });
 });
+
+// Initialize Passport
+app.use(passport.initialize());
 
 // API Routes
 app.use('/api/auth', authRoutes);

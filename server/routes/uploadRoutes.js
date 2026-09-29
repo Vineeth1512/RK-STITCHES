@@ -1,10 +1,10 @@
 import express from 'express';
 import { upload, processUploadedFile, processUploadedFiles } from '../middlewares/upload.js';
-import { protect } from '../middlewares/auth.js';
+import { protect, optionalAuth } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-router.post('/single', protect, upload.single('file'), async (req, res, next) => {
+router.post('/single', optionalAuth, upload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });

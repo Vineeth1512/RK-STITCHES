@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   HelpCircle
 } from 'lucide-react';
+import ImageUpload from '../../components/common/ImageUpload';
 
 export default function CustomStitching() {
   const [searchParams] = useSearchParams();
@@ -688,25 +689,20 @@ export default function CustomStitching() {
               </h3>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
-                  Add Reference Photo URL (Pinterest, Instagram, or Cloud Link)
-                </label>
-                <div className="flex space-x-2">
-                  <input
-                    type="url"
-                    value={formData.photoUrlInput}
-                    onChange={(e) => setFormData({ ...formData, photoUrlInput: e.target.value })}
-                    placeholder="https://images.unsplash.com/photo-..."
-                    className="flex-1 p-3 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddPhotoUrl}
-                    className="px-5 py-3 rounded-xl bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 text-xs font-semibold"
-                  >
-                    Add Photo
-                  </button>
-                </div>
+                <ImageUpload
+                  label="Upload Reference Outfit or Neckline Photo"
+                  value=""
+                  onChange={(url) => {
+                    if (url) {
+                      setFormData((prev) => ({
+                        ...prev,
+                        referencePhotos: [...prev.referencePhotos, url]
+                      }));
+                      dispatch(addToast({ message: 'Reference photo added!', type: 'success' }));
+                    }
+                  }}
+                  placeholder="Or paste Pinterest/Instagram image link"
+                />
               </div>
 
               {formData.referencePhotos.length > 0 && (

@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { addToast } from '../../store/slices/uiSlice';
 import api from '../../services/api';
 import { Ruler, Plus, Edit2, Trash2, CheckCircle2, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function CustomerMeasurements() {
   const dispatch = useDispatch();

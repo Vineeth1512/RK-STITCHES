@@ -5,6 +5,7 @@ import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authS
 import { addToast } from '../../store/slices/uiSlice';
 import api from '../../services/api';
 import { Scissors, Lock, Mail, ArrowRight, ShieldCheck, User } from 'lucide-react';
+import GoogleAuthButton from '../../components/common/GoogleAuthButton';
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -14,6 +15,34 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Capture Passport Google OAuth callback redirect
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    const userParam = params.get('user');
+    const errorParam = params.get('error');
+
+    if (errorParam) {
+      dispatch(addToast({ message: decodeURIComponent(errorParam), type: 'error' }));
+      return;
+    }
+
+    if (token && userParam) {
+      try {
+        const user = JSON.parse(decodeURIComponent(userParam));
+        dispatch(loginSuccess({ token, user }));
+        dispatch(addToast({ message: `Welcome back, ${user.name}!`, type: 'success' }));
+        if (['ADMIN', 'SUPER_ADMIN', 'STAFF'].includes(user.role)) {
+          navigate('/admin', { replace: true });
+        } else {
+          navigate('/dashboard', { replace: true });
+        }
+      } catch (err) {
+        console.error('Failed to parse Google OAuth user:', err);
+      }
+    }
+  }, [location.search, dispatch, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -144,6 +173,16 @@ export default function Login() {
           >
             {loading ? 'Authenticating...' : 'Sign In'}
           </button>
+
+          <div className="relative flex items-center justify-center my-2">
+            <div className="border-t border-stone-200 dark:border-stone-700 w-full" />
+            <span className="bg-white dark:bg-stone-900 px-3 text-[11px] font-semibold uppercase tracking-wider text-stone-400 shrink-0">
+              or continue with
+            </span>
+            <div className="border-t border-stone-200 dark:border-stone-700 w-full" />
+          </div>
+
+          <GoogleAuthButton text="Sign in with Google" />
         </form>
 
         <div className="text-center text-xs text-stone-500 pt-2 border-t border-stone-100 dark:border-stone-800">

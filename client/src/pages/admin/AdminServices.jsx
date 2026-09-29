@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { addToast } from '../../store/slices/uiSlice';
 import api from '../../services/api';
 import { Scissors, Plus, Edit2, Trash2, X, CheckCircle2 } from 'lucide-react';
+import ImageUpload from '../../components/common/ImageUpload';
 
 export default function AdminServices() {
   const dispatch = useDispatch();
@@ -21,7 +22,7 @@ export default function AdminServices() {
     priceRange: '₹650 - ₹1,500',
     estimatedDays: '3-4 business days',
     isFeatured: false,
-    images: ['https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=900&auto=format&fit=crop&q=80'],
+    images: [],
     tags: 'Bridal, Custom, Tailored'
   };
 
@@ -249,15 +250,11 @@ export default function AdminServices() {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold mb-1">Image URL</label>
-                <input
-                  type="url"
-                  value={form.images[0] || ''}
-                  onChange={(e) => setForm({ ...form, images: [e.target.value] })}
-                  className="w-full p-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-sm"
-                />
-              </div>
+              <ImageUpload
+                label="Service Image"
+                value={form.images[0] || ''}
+                onChange={(url) => setForm({ ...form, images: url ? [url] : [] })}
+              />
 
               <div className="flex items-center space-x-2 pt-2">
                 <input

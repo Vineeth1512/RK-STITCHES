@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { openVideoModal } from '../../store/slices/uiSlice';
-import { addToWishlist, removeFromWishlist } from '../../store/slices/wishlistSlice';
+import { toggleWishlist } from '../../store/slices/wishlistSlice';
 import api from '../../services/api';
 import BeforeAfterSlider from '../../components/ui/BeforeAfterSlider';
 import {
@@ -56,11 +56,7 @@ export default function Home() {
   };
 
   const handleWishlistToggle = (design) => {
-    if (isItemWishlisted(design._id)) {
-      dispatch(removeFromWishlist(design._id));
-    } else {
-      dispatch(addToWishlist(design));
-    }
+    dispatch(toggleWishlist(design));
   };
 
   return (

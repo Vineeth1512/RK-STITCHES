@@ -54,7 +54,7 @@ async function seed() {
     });
 
     const customerUser = await User.create({
-      name: 'Ananya Reddy',
+      name: 'Ananya Patel',
       email: 'ananya@example.com',
       phone: '+919812345678',
       password: 'Customer@123456',

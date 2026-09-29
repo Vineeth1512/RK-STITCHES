@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { addToast } from '../../store/slices/uiSlice';
 import api from '../../services/api';
 import { Sparkles, Plus, Edit2, Trash2, X, Image as ImageIcon } from 'lucide-react';
+import ImageUpload from '../../components/common/ImageUpload';
 
 export default function AdminDesigns() {
   const dispatch = useDispatch();
@@ -17,7 +18,7 @@ export default function AdminDesigns() {
     description: '',
     estimatedPrice: 3500,
     priceNote: 'Stitching and lining included',
-    images: ['https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=900&auto=format&fit=crop&q=80'],
+    images: [],
     tags: 'Bridal, Peacock, Zardozi',
     fabricRecommendation: 'Raw Silk, Mulberry Silk',
     isFeatured: true
@@ -206,15 +207,11 @@ export default function AdminDesigns() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold mb-1">Image URL</label>
-                <input
-                  type="url"
-                  value={form.images[0] || ''}
-                  onChange={(e) => setForm({ ...form, images: [e.target.value] })}
-                  className="w-full p-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border text-sm"
-                />
-              </div>
+              <ImageUpload
+                label="Design Image"
+                value={form.images[0] || ''}
+                onChange={(url) => setForm({ ...form, images: url ? [url] : [] })}
+              />
 
               <div>
                 <label className="block text-xs font-semibold mb-1">Description</label>

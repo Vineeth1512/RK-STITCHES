@@ -1,29 +1,20 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFromWishlist, setWishlist } from '../../store/slices/wishlistSlice';
-import api from '../../services/api';
+import { fetchWishlist, toggleWishlist } from '../../store/slices/wishlistSlice';
 import { Heart, Trash2, Scissors, ArrowRight } from 'lucide-react';
 
 export default function CustomerWishlist() {
   const dispatch = useDispatch();
   const wishlistItems = useSelector((state) => state.wishlist.items);
+  const loading = useSelector((state) => state.wishlist.loading);
 
   useEffect(() => {
-    api.get('/wishlist')
-      .then((res) => {
-        dispatch(setWishlist(res.data?.data || []));
-      })
-      .catch((err) => console.error(err));
+    dispatch(fetchWishlist());
   }, [dispatch]);
 
-  const handleRemove = async (id) => {
-    try {
-      await api.delete(`/wishlist/${id}`);
-      dispatch(removeFromWishlist(id));
-    } catch (err) {
-      dispatch(removeFromWishlist(id));
-    }
+  const handleRemove = (item) => {
+    dispatch(toggleWishlist(item));
   };
 
   return (
@@ -54,7 +45,7 @@ export default function CustomerWishlist() {
                     className="w-full h-full object-cover"
                   />
                   <button
-                    onClick={() => handleRemove(item._id)}
+                    onClick={() => handleRemove(item)}
                     className="absolute top-3 right-3 p-2.5 rounded-full bg-stone-950/70 hover:bg-rose-600 text-white backdrop-blur-md transition-colors"
                     title="Remove"
                   >
