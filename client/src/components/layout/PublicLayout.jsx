@@ -10,7 +10,7 @@ import VideoPlayerModal from '../common/VideoPlayerModal';
 
 export default function PublicLayout() {
   return (
-    <div className="min-h-screen flex flex-col bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-100 transition-colors duration-200 overflow-x-hidden w-full">
+    <div className="min-h-screen flex flex-col bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-100 transition-colors duration-200 w-full">
       <Navbar />
       <main className="flex-1">
         <Outlet />
