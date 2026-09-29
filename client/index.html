@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23af6035'/><path d='M35 65 L65 35 M65 35 L55 35 M65 35 L65 45' stroke='%23fef5d6' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/><circle cx='35' cy='65' r='5' fill='%23fde5a8'/></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#af6035" />
+    <meta name="description" content="RK Stitches - Professional Tailoring & Custom Stitching Studio. Exquisite blouses, bridal lehengas, maggam work, long frocks, and bespoke designer outfits for women and children." />
+    <meta name="keywords" content="Tailoring, Custom Stitching, Maggam Work, Blouse Stitching, Lehenga Stitching, Hyderabad Tailor, RK Stitches, Women Boutique" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="RK STITCHES | Haute Couture & Bespoke Tailoring Studio" />
+    <meta property="og:description" content="Handcrafted bridal blouses, intricate maggam embroidery, and made-to-measure ethnic garments." />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+    <title>RK STITCHES | Premium Tailoring & Custom Stitching Studio</title>
+
+    <!-- Theme Initialization Script -->
+    <script>
+      (function() {
+        try {
+          const storedTheme = localStorage.getItem('rk_theme');
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (storedTheme === 'dark' || (!storedTheme && systemPrefersDark)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body class="bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-100 font-sans antialiased transition-colors duration-200">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
