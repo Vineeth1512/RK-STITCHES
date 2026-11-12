@@ -26,7 +26,34 @@ export default function CustomStitching() {
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
 
-  const initialClothing = searchParams.get('clothingType') || 'Blouse';
+  const normalizeClothingType = (val) => {
+    if (!val) return 'Blouse';
+    const map = {
+      'blouse': 'Blouse',
+      'blouses': 'Blouse',
+      'maggam work': 'Maggam Work Blouse',
+      'maggam work blouse': 'Maggam Work Blouse',
+      'lehengas': 'Lehenga / Choli',
+      'lehenga': 'Lehenga / Choli',
+      'lehenga / choli': 'Lehenga / Choli',
+      'long frocks': 'Long Frock',
+      'long frock': 'Long Frock',
+      'kurtis & suits': 'Kurti / Salwar',
+      'kurtis': 'Kurti / Salwar',
+      'kurti': 'Kurti / Salwar',
+      'kurti / salwar': 'Kurti / Salwar',
+      'langa blouses': 'Langa Blouse (Pattu Pavada)',
+      'langa blouse': 'Langa Blouse (Pattu Pavada)',
+      'langa blouse (pattu pavada)': 'Langa Blouse (Pattu Pavada)',
+      'uniforms': 'School / College Uniform',
+      'school / college uniform': 'School / College Uniform',
+      'western dress': 'Western Dress',
+      'kids wear': 'Kids Wear'
+    };
+    return map[val.toLowerCase().trim()] || val;
+  };
+
+  const initialClothing = normalizeClothingType(searchParams.get('clothingType'));
   const initialService = searchParams.get('service') || '';
   const initialDesign = searchParams.get('design') || '';
 
@@ -171,7 +198,7 @@ export default function CustomStitching() {
         clothingType: formData.clothingType,
         serviceName: formData.serviceName,
         preferredDesign: formData.preferredDesign,
-        savedMeasurementProfile: formData.measurementChoice === 'SAVED' ? formData.savedProfileId : null,
+        savedMeasurementProfile: (formData.measurementChoice === 'SAVED' && formData.savedProfileId) ? formData.savedProfileId : null,
         measurementsSnapshot: formData.measurementsSnapshot,
         fabricStatus: formData.fabricStatus,
         fabricDetails: formData.fabricDetails,

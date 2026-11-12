@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Booking from '../models/Booking.js';
 import Notification from '../models/Notification.js';
 import { BOOKING_STATUS } from '../constants/status.js';
@@ -40,15 +41,22 @@ export const createBooking = async (req, res, next) => {
       }
     ];
 
+    const safeProfileId = (savedMeasurementProfile && mongoose.Types.ObjectId.isValid(savedMeasurementProfile))
+      ? savedMeasurementProfile
+      : null;
+    const safeServiceId = (service && mongoose.Types.ObjectId.isValid(service))
+      ? service
+      : null;
+
     const booking = await Booking.create({
       user: req.user ? req.user._id : null,
       customerName,
       customerPhone,
       customerEmail: customerEmail || (req.user ? req.user.email : ''),
       clothingType,
-      service: service || null,
+      service: safeServiceId,
       serviceName: serviceName || clothingType,
-      savedMeasurementProfile: savedMeasurementProfile || null,
+      savedMeasurementProfile: safeProfileId,
       measurementsSnapshot: measurementsSnapshot || {},
       fabricStatus: fabricStatus || 'CUSTOMER_PROVIDED',
       fabricDetails: fabricDetails || '',
@@ -64,16 +72,20 @@ export const createBooking = async (req, res, next) => {
       timeline: initialTimeline
     });
 
-    // Create notification if user is authenticated
+    // Create notification if user is authenticated (wrapped so it won't fail the booking if notification fails)
     if (req.user) {
-      await Notification.create({
-        user: req.user._id,
-        title: 'Booking Request Received',
-        message: `Your booking #${booking.bookingNumber} for ${booking.clothingType} has been submitted successfully.`,
-        type: 'BOOKING_UPDATE',
-        bookingId: booking._id,
-        link: `/dashboard/bookings/${booking._id}`
-      });
+      try {
+        await Notification.create({
+          user: req.user._id,
+          title: 'Booking Request Received',
+          message: `Your booking #${booking.bookingNumber} for ${booking.clothingType} has been submitted successfully.`,
+          type: 'BOOKING_UPDATE',
+          bookingId: booking._id,
+          link: `/dashboard/bookings/${booking._id}`
+        });
+      } catch (notifErr) {
+        console.warn('[Booking] Could not create in-app notification:', notifErr.message);
+      }
     }
 
     res.status(201).json({

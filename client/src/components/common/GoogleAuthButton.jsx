@@ -6,7 +6,11 @@ import React from 'react';
  */
 export default function GoogleAuthButton({ text = 'Continue with Google' }) {
   const handleGoogleLogin = () => {
-    const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    const rawApiUrl =
+      import.meta.env.VITE_API_URL ||
+      (import.meta.env.PROD
+        ? 'https://rk-stitches-backend.onrender.com/api'
+        : 'http://localhost:5000/api');
     const baseUrl = rawApiUrl.endsWith('/api')
       ? rawApiUrl
       : `${rawApiUrl.replace(/\/+$/, '')}/api`;

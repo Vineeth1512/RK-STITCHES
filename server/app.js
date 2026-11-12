@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
+import mongoose from 'mongoose';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -95,12 +96,31 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check (supports root, /health, /api/health)
 app.get(['/', '/health', '/api/health'], (req, res) => {
-  res.status(200).json({
-    status: 'ok',
+  const dbState = mongoose.connection.readyState;
+  const dbStatusMap = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+  const isHealthy = dbState === 1;
+
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'ok' : 'degraded',
+    database: dbStatusMap[dbState] || 'unknown',
+    databaseConnected: isHealthy,
     brand: 'RK STITCHES API',
     uptime: process.uptime(),
     timestamp: new Date()
   });
+});
+
+// Guard: Fast response if database is disconnected, preventing 10s buffering timeouts
+app.use('/api', (req, res, next) => {
+  if (req.path === '/health' || req.path === '/health/') return next();
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      success: false,
+      message: 'Database is currently disconnected. Please verify MONGODB_URI and MongoDB Atlas Network Access (whitelist 0.0.0.0/0 on Render).',
+      error: 'DATABASE_DISCONNECTED'
+    });
+  }
+  next();
 });
 
 // Initialize Passport

@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
-  const url = import.meta.env.VITE_API_URL;
-  if (!url) return '/api';
+  const url = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://rk-stitches-backend.onrender.com/api' : '/api');
   return url.endsWith('/api') ? url : `${url.replace(/\/+$/, '')}/api`;
 };
 

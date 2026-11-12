@@ -176,6 +176,37 @@ bookingSchema.pre('validate', function (next) {
     const dateStr = new Date().toISOString().slice(2, 10).replace(/-/g, '');
     this.bookingNumber = `RK-${dateStr}-${randomSuffix}`;
   }
+  if (this.clothingType && typeof this.clothingType === 'string') {
+    const map = {
+      'blouse': 'Blouse',
+      'blouses': 'Blouse',
+      'maggam work': 'Maggam Work Blouse',
+      'maggam work blouse': 'Maggam Work Blouse',
+      'lehengas': 'Lehenga / Choli',
+      'lehenga': 'Lehenga / Choli',
+      'lehenga / choli': 'Lehenga / Choli',
+      'long frocks': 'Long Frock',
+      'long frock': 'Long Frock',
+      'kurtis & suits': 'Kurti / Salwar',
+      'kurtis': 'Kurti / Salwar',
+      'kurti': 'Kurti / Salwar',
+      'kurti / salwar': 'Kurti / Salwar',
+      'langa blouses': 'Langa Blouse (Pattu Pavada)',
+      'langa blouse': 'Langa Blouse (Pattu Pavada)',
+      'langa blouse (pattu pavada)': 'Langa Blouse (Pattu Pavada)',
+      'uniforms': 'School / College Uniform',
+      'uniform': 'School / College Uniform',
+      'school / college uniform': 'School / College Uniform',
+      'western dress': 'Western Dress',
+      'kids wear': 'Kids Wear',
+      'custom design / other': 'Custom Design / Other',
+      'other': 'Custom Design / Other'
+    };
+    const norm = map[this.clothingType.trim().toLowerCase()];
+    if (norm) {
+      this.clothingType = norm;
+    }
+  }
   next();
 });
 
